@@ -1,6 +1,4 @@
 # 4finomen
-Programming languages homeworks
-
 SimpleCalc.cpp
 
 	--std=c++11 for g++ requiered.
