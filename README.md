@@ -12,3 +12,5 @@ SimpleCalc.cpp
 		1b. Or type "#<number>" if you expect it to recieve an exact number.
 		1c. You also may not use any hashes.
 		2ab. Program will compare its results with given.
+		
+	Thematical drawing can be found at https://www.dropbox.com/s/d5hgu8v6wta2ogt/DSC_0348.JPG?dl=0
