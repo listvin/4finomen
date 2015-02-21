@@ -2,6 +2,7 @@
 Programming languages homeworks
 
 SimpleCalc.cpp
+
 	--std=c++11 for g++ requiered.
 
 	For input from console comment 13-line.	By default input from "arithmetic.py" in the same directory.
