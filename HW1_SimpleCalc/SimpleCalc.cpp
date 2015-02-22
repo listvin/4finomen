@@ -10,7 +10,7 @@
 using namespace std;
 
 //~ #define MSVCPP
-#define fname "input.py"
+//~ #define fname "input.py"
 typedef long long int tdata;
 
 tdata str2lli(string str_number){
