@@ -3,6 +3,8 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
+
+namespace worldspace{
 using namespace std;
 
 #define REP(n) for (int i = 0; i < (int)n; ++i)
@@ -22,6 +24,7 @@ struct tcell{
 #define FOR_ALL_CELLS(it) \
 	for (tcell * row = corner[0]; row != NULL; row = row->neighbour[1])\
 		for (tcell * it = row; it != NULL; it = it->neighbour[2])
+
 class tworld{
 private:
 	int T = 0; //time counter
@@ -29,6 +32,8 @@ private:
 	int bound[4] = {1, 1, 0, 0};
 	int alive[2]; //count of living cells
 	int born, dead; //for statistics only
+	tcell * phook = NULL; //in order to make print() faster
+	int px = 0, py = 0, ph = 24; //in order to make print() faster
 	
 	int length(tdir dir){ return bound[dir] + bound[opp(dir)];}
 	bool parity(bool current = false){ return (T + !current) & 1;}
@@ -60,7 +65,6 @@ private:
 		//4. increase size
 		++bound[dir];
 	}
-	
 	void expansion(){
 		bool pp = parity(false); //number of previous (irrelevant) moment of time in tcell.state[]
 		REP(4){
@@ -96,7 +100,6 @@ private:
 		//4. decrease size
 		--bound[dir];		
 	}
-
 	void reduction(){
 		bool cp = parity(true); //number of current (relevant) moment of time in tcell.state[]
 		REP(4){
@@ -193,4 +196,22 @@ public:
 			if (i == a[alive[0]]) it->state[0] = _alive, ++alive[0];
 		}
 	}
+
+	void print(int x0, int y0, bool new_session = false, int height = 24){
+		assert(x0 >= minX() && y0 >= minY());
+		if ()tcell * hook = corner[3];
+		int x = minX(), y = minY();
+		while (px < x0) hook = hook->neighbour[_east];
+		while (py < y0) hook = hook->neighbour[_north];
+		
+	}
+
+	void print(){
+		
+	}
+
 };
+
+#undef REP
+#undef FOR_ALL_CELLS
+}
