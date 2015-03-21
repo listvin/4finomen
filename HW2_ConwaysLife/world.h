@@ -1,10 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <cstdio>
 #include <cassert>
 #include <vector>
 #include <algorithm>
 
-namespace worldspace{
+//~ namespace worldspace{
 using namespace std;
 
 #define REP(n) for (int i = 0; i < (int)n; ++i)
@@ -31,13 +32,15 @@ private:
 	tcell * corner[4]; //corner hooks for cells
 	int bound[4] = {1, 1, 0, 0};
 	int alive[2]; //count of living cells
-	int born, dead; //for statistics only
-	tcell * phook = NULL; //in order to make print() faster
-	int px = 0, py = 0, ph = 24; //in order to make print() faster
-	
+
 	int length(tdir dir){ return bound[dir] + bound[opp(dir)];}
 	bool parity(bool current = false){ return (T + !current) & 1;}
+
+public:
+	int born, dead; //for statistics only
+	int alive_count(){ return alive[parity(true)];}
 	
+private:
 	void expand(tdir dir){
 		//1. init locals
 		tcell * hook = corner[dir];
@@ -116,7 +119,7 @@ private:
 		}
 	}
 
-	tstate detState(tcell * p){
+	tstate det_state(tcell * p){
 		assert(p);
 		int c = 0; //count of alive cells
 		bool pp = parity(false); //number of previous (irrelevant) moment of time in tcell.state[]
@@ -133,6 +136,7 @@ private:
 		return c == 2 ? p->state[pp] : tstate(c == 3);
 	}
 
+public:
 	void step(){
 		//1. step the timer
 		++T;
@@ -144,7 +148,7 @@ private:
 		int pp = parity(false);
 		int cp = parity(true);
 		FOR_ALL_CELLS(it)
-			it->state[cp] = detState(it);
+			it->state[cp] = det_state(it);
 		
 		//4. get stats
 		born = dead = 0;
@@ -165,6 +169,7 @@ private:
 		corner[0] = corner[1] = corner[2] = corner[3] = new tcell();
 	}
 
+private:
 	tworld(int W, int H) : tworld(){
 		assert(W >= 1 && H >= 1);
 		while (bound[_east] <= W) expand(_east);
@@ -196,22 +201,64 @@ public:
 			if (i == a[alive[0]]) it->state[0] = _alive, ++alive[0];
 		}
 	}
-
-	void print(int x0, int y0, bool new_session = false, int height = 24){
-		assert(x0 >= minX() && y0 >= minY());
-		if ()tcell * hook = corner[3];
-		int x = minX(), y = minY();
-		while (px < x0) hook = hook->neighbour[_east];
-		while (py < y0) hook = hook->neighbour[_north];
+	
+	tworld(ifstream * inf){
+		string s; getline(*inf, s);
+		*this = tworld(s.size(), s.size());
 		
+		for (tcell * row = corner[2]; row != NULL; row = row->neighbour[_south]){
+			int i = 0;
+			for (tcell * it = row; it != NULL; it = it->neighbour[_east], ++i)
+				it->state[0] = s[i] == '0' || s[i] == ' ' || s[i] == '.' ? _dead : _alive;
+			getline(*inf, s);
+		}
 	}
 
+private:
+	tcell * shook = NULL; //in order to make scope() faster
+	int sx = 0, sy = 0, sh = 24; //in order to make scope() faster
+	
 	void print(){
+		int cp = parity(true);
+		tcell * hook = shook;
+		int lsh = 1;
+		REP(sh-1) if (hook->neighbour[_north]) hook = hook->neighbour[_north], ++lsh;
 		
+		int y = 0;
+		for (tcell * row = hook; row != NULL && y < lsh; row = row->neighbour[1], ++y){
+			int x = 0;
+			for (tcell * it = row; it != NULL && x < sh; it = it->neighbour[2], ++x)
+				putchar(it->state[cp] ? '#' : '+');
+			printf("\tline №%d\n", y);
+		}
 	}
-
+	
+public:
+	bool scope(int dx, int dy){
+		assert(dx * dy == 0);
+		if (!shook)
+			shook = corner[3];
+			sx = minX(),
+			sy = minY();
+		if (dx)
+			if (dx > 0)
+				if (shook->neighbour[_east]) shook = shook->neighbour[_east];
+				else return false;
+			else
+				if (shook->neighbour[_west]) shook = shook->neighbour[_west];
+				else return false;
+		else
+			if (dy > 0)
+				if (shook->neighbour[_north]) shook = shook->neighbour[_north];
+				else return false;
+			else
+				if (shook->neighbour[_south]) shook = shook->neighbour[_south];
+				else return false;
+		print();
+		return true;			
+	}
 };
 
 #undef REP
 #undef FOR_ALL_CELLS
-}
+//~ }
