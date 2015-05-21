@@ -5,7 +5,7 @@
 #include <sstream>
 #include <queue>
 #include <cmath>
-#include "world.h"
+#include "world.hpp"
 using namespace std;
 
 #define REP(n) for (int i = 0; i < (int)n; ++i)
@@ -83,18 +83,21 @@ int main(int argc, char * arg[]){
 		world.step();
 
 		static int prv_pop = pop0;
-		if (prv_pop == world.alive_count()) cnst_step = i+1; prv_pop = world.alive_count();
+		if (prv_pop == world.alive_count()) cnst_step = i+1;
+		prv_pop = world.alive_count();
 
 		static double sratio = 0;
-		sratio += (double)world.born/world.dead;
+		sratio = world.dead ? sratio + (double)world.born/world.dead : world.born ? 1./0. : 0./0.;
 		
-		printf("DAY %*d. %10d are alive. <ratio> == %05lf", digits, i+1, world.alive_count(), sratio / (i%10+1));
+		printf("DAY %*d. %d are alive. <ratio> == %05lf", digits, i+1, world.alive_count(), sratio / (i%10+1));
 		if ((i+1)%10) printf("\r"); else printf("\n"), sratio = 0;
+		//~ if ((i+1)%10) printf("\n"); else printf("\n"), sratio = 0;
 	}
 	if ((S-1)%10) cout << endl; else cout.flush();
-	cout << "\nAll in all population " << (pop0 < world.alive_count() ? "insreased" : "decreased") << " by " << abs(world.alive_count()-pop0) << " cells." << endl;
-	if (cnst_step) cout << "Population stayed constant last time after day " << cnst_step << endl;
+	cout << "\nAll in all population " << (pop0 < world.alive_count() ? "insreased" : "decreased") << " by " << abs(world.alive_count()-pop0) << " cells (" << int(abs(world.alive_count()-pop0)/double(pop0)*100) << "%)." << endl;
+	if (cnst_step) cout << "Population stayed constant last time after day " << cnst_step << "." << endl;
 	else cout << "Population have been changing for all evaluation time." << endl;
+	world.reset(); cerr << DB(world.scope(0,0)) << endl;
 	return 0;
 }
 
